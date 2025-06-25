@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <gpio.h>
 #include <stm32f3x.h>
+#include <stdlib.h>
 
 static const uint32_t SystemCoreClock = 8000000; // Assuming a system clock of 8 MHz, adjust as necessary
 void uart_init(UART_TypeDef *uart, uint32_t baudrate){
@@ -44,6 +45,7 @@ void uart_init(UART_TypeDef *uart, uint32_t baudrate){
 }
 void uart_send(UART_TypeDef *uart, uint8_t data){
     // Wait until the transmit data register is empty
+    if(uart == NULL) return; // Check if uart is NULL
     uart_disable_rx(uart); // Ensure RX is disabled
     uart_enable_tx(uart);
     while (!(uart->ISR & (1 << 7))); // TXE bit in ISR
@@ -52,6 +54,7 @@ void uart_send(UART_TypeDef *uart, uint8_t data){
     uart->TDR = data;
 }
 char uart_receive(UART_TypeDef *uart){
+    if(uart == NULL) return 0; // Check if uart is NULL
     // Wait until the receive data register is not empty
     uart_disable_tx(uart); // Ensure TX is disabled
     uart_enable_rx(uart); // Ensure RX is enabled
@@ -59,6 +62,7 @@ char uart_receive(UART_TypeDef *uart){
     return uart->RDR;
 }
 void uart_enable_interrupt(UART_TypeDef *uart, uint32_t interrupt){
+    if(uart == NULL) return; // Check if uart is NULL
     // Enable the specified interrupt
     if (interrupt & (1 << 0)) { // TXEIE
         uart->CR1 |= (1 << 7);
@@ -74,6 +78,7 @@ void uart_enable_interrupt(UART_TypeDef *uart, uint32_t interrupt){
     }
 }
 void uart_disable_interrupt(UART_TypeDef *uart, uint32_t interrupt){
+    if(uart == NULL) return; // Check if uart is NULL
     // Disable the specified interrupt
     if (interrupt & (1 << 0)) { // TXEIE
         uart->CR1 &= ~(1 << 7);
@@ -89,6 +94,7 @@ void uart_disable_interrupt(UART_TypeDef *uart, uint32_t interrupt){
     }
 }
 void uart_clear_interrupt(UART_TypeDef *uart, uint32_t interrupt){
+    if(uart == NULL) return; // Check if uart is NULL
     // Clear the specified interrupt
     if (interrupt & (1 << 0)) { // TXE
         uart->ICR |= (1 << 7); // Clear TXE flag
@@ -104,10 +110,12 @@ void uart_clear_interrupt(UART_TypeDef *uart, uint32_t interrupt){
     }
 }
 void uart_set_baudrate(UART_TypeDef *uart, uint32_t baudrate){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the baud rate
     uart->BRR = SystemCoreClock / baudrate;
 }
 void uart_set_parity(UART_TypeDef *uart, uint32_t parity){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the parity mode
     if (parity == 0) { // No parity
         uart->CR1 &= ~(1 << 10); // PCE bit in CR1
@@ -120,6 +128,7 @@ void uart_set_parity(UART_TypeDef *uart, uint32_t parity){
     }
 }
 void uart_set_stop_bits(UART_TypeDef *uart, uint32_t stop_bits){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the number of stop bits
     if (stop_bits == 1) {
         uart->CR2 &= ~(3 << 12); // Clear STOP bits in CR2
@@ -132,6 +141,7 @@ void uart_set_stop_bits(UART_TypeDef *uart, uint32_t stop_bits){
     }
 }
 void uart_set_word_length(UART_TypeDef *uart, uint32_t word_length){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the word length
     if (word_length == 8) {
         uart->CR1 &= ~(1 << 12); // M0 bit in CR1
@@ -145,14 +155,17 @@ void uart_set_word_length(UART_TypeDef *uart, uint32_t word_length){
     }
 }
 void uart_enable(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Enable the UART
     uart->CR1 |= (1 << 13); // UE bit in CR1 to enable the USART
 }
 void uart_disable(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Disable the UART
     uart->CR1 &= ~(1 << 13); // UE bit in CR1 to disable the USART
 }
 void uart_set_flow_control(UART_TypeDef *uart, uint32_t flow_control){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the flow control mode
     if (flow_control == 0) { // No flow control
         uart->CR3 &= ~(1 << 8); // CTSE bit in CR3
@@ -169,6 +182,7 @@ void uart_set_flow_control(UART_TypeDef *uart, uint32_t flow_control){
     }
 }
 void uart_set_mode(UART_TypeDef *uart, uint32_t mode){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the mode (transmit, receive, or both)
     if (mode == 0) { // Transmit only
         uart->CR1 |= (1 << 3); // TE bit in CR1
@@ -182,22 +196,27 @@ void uart_set_mode(UART_TypeDef *uart, uint32_t mode){
     }
 }
 void uart_set_rx_timeout(UART_TypeDef *uart, uint32_t timeout){
+    if(uart == NULL) return; // Check if uart is NULL
     // Set the receiver timeout value
     uart->RTOR = timeout; // Set the receiver timeout register
 }
 void uart_enable_rx(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Enable the receiver
     uart->CR1 |= (1 << 2); // RE bit in CR1 to enable the receiver
 }
 void uart_disable_rx(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Disable the receiver
     uart->CR1 &= ~(1 << 2); // RE bit in CR1 to disable the receiver
 }
 void uart_enable_tx(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Enable the transmitter
     uart->CR1 |= (1 << 3); // TE bit in CR1 to enable the transmitter
 }
 void uart_disable_tx(UART_TypeDef *uart){
+    if(uart == NULL) return; // Check if uart is NULL
     // Disable the transmitter
     uart->CR1 &= ~(1 << 3); // TE bit in CR1 to disable the transmitter
 }
